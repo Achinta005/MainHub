@@ -37,6 +37,7 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
   }, [onClose]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setIframeKey((prev) => prev + 1);
   }, [project, device]);
@@ -56,40 +57,42 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
   const getContainerWidth = () => {
     switch (device) {
       case "mobile":
-        return "w-[390px] h-[780px] max-h-full rounded-3xl border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
+        return "w-full max-w-[390px] h-full sm:h-[780px] max-h-full rounded-none sm:rounded-3xl border-0 sm:border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
       case "tablet":
-        return "w-[768px] h-[820px] max-h-full rounded-2xl border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
+        return "w-full max-w-[768px] h-full sm:h-[820px] max-h-full rounded-none sm:rounded-2xl border-0 sm:border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
       case "desktop":
       default:
-        return "w-full h-full min-h-[600px] rounded-b-xl border border-zinc-200 dark:border-zinc-800 shadow-inner flex flex-col";
+        return "w-full h-full min-h-[400px] sm:min-h-[600px] rounded-b-none sm:rounded-b-xl border-0 sm:border border-zinc-200 dark:border-zinc-800 shadow-inner flex flex-col";
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-md p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="relative flex flex-col w-full h-[95vh] max-w-7xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl transition-colors duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-md p-0 sm:p-4 animate-in fade-in duration-200">
+      <div className="relative flex flex-col w-full h-[100dvh] sm:h-[95vh] max-w-7xl bg-white dark:bg-zinc-950 border-0 sm:border border-zinc-200 dark:border-zinc-800/80 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl transition-colors duration-200">
         {/* Top Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-zinc-50/90 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 text-sky-600 dark:text-sky-400">
+        <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-50/90 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 transition-colors shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 text-sky-600 dark:text-sky-400 shrink-0">
               <Globe className="w-4 h-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{project.title}</h3>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 border border-sky-300 dark:border-sky-800/50">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h3 className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate max-w-[120px] sm:max-w-xs">
+                  {project.title}
+                </h3>
+                <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 border border-sky-300 dark:border-sky-800/50 shrink-0">
                   {project.category}
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 hidden sm:block truncate max-w-md">
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 hidden sm:block truncate max-w-md">
                 {targetUrl || "Local Project"}
               </p>
             </div>
           </div>
 
-          {/* Device Controls */}
+          {/* Device Controls (Hidden on mobile screens < 640px) */}
           {project.allowIframe && targetUrl && (
-            <div className="flex items-center gap-1 bg-zinc-200/70 dark:bg-zinc-950 p-1 rounded-lg border border-zinc-300/80 dark:border-zinc-800">
+            <div className="hidden sm:flex items-center gap-1 bg-zinc-200/70 dark:bg-zinc-950 p-1 rounded-lg border border-zinc-300/80 dark:border-zinc-800 shrink-0">
               <button
                 onClick={() => setDevice("desktop")}
                 className={`p-1.5 rounded-md text-xs transition-colors ${
@@ -127,7 +130,7 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {targetUrl && (
               <>
                 <button
@@ -135,7 +138,7 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
                   className="p-1.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                   title="Reload Iframe"
                 >
-                  <RotateCw className="w-4 h-4" />
+                  <RotateCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={handleCopy}
@@ -143,35 +146,35 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
                   title="Copy Direct URL"
                 >
                   {copied ? (
-                    <Check className="w-4 h-4 text-emerald-500" />
+                    <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
                   ) : (
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   )}
                 </button>
                 <a
                   href={targetUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-lg transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-lg transition-colors shadow-sm"
                 >
                   <span>Launch</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </a>
               </>
             )}
 
             <button
               onClick={onClose}
-              className="p-1.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 rounded-lg transition-colors ml-1"
+              className="p-1.5 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 rounded-lg transition-colors ml-0.5 sm:ml-1"
               title="Close Preview (Esc)"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Viewport Body */}
-        <div className="relative flex-1 w-full bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center p-2 sm:p-4 overflow-auto transition-colors">
+        <div className="relative flex-1 w-full bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center p-0 sm:p-4 overflow-auto transition-colors">
           {project.allowIframe && targetUrl ? (
             <div className={`relative transition-all duration-300 overflow-hidden ${getContainerWidth()}`}>
               {isLoading && (
@@ -184,7 +187,7 @@ export default function LivePreviewModal({ project, onClose }: LivePreviewModalP
                 key={iframeKey}
                 src={targetUrl}
                 title={project.title}
-                className="w-full h-full min-h-[600px] flex-1 bg-white dark:bg-zinc-900 border-0 block"
+                className="w-full h-full min-h-[400px] sm:min-h-[600px] flex-1 bg-white dark:bg-zinc-900 border-0 block"
                 onLoad={() => setIsLoading(false)}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               />

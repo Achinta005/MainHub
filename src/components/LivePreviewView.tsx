@@ -37,6 +37,7 @@ export default function LivePreviewView({
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     setIframeKey((prev) => prev + 1);
   }, [selectedProject, device]);
@@ -54,28 +55,28 @@ export default function LivePreviewView({
   const getContainerWidth = () => {
     switch (device) {
       case "mobile":
-        return "w-[390px] h-[780px] max-h-full rounded-3xl border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
+        return "w-full max-w-[390px] h-full sm:h-[780px] max-h-full rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
       case "tablet":
-        return "w-[768px] h-[820px] max-h-full rounded-2xl border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
+        return "w-full max-w-[768px] h-full sm:h-[820px] max-h-full rounded-xl sm:rounded-2xl border-2 sm:border-4 border-zinc-300 dark:border-zinc-800 shadow-2xl";
       case "desktop":
       default:
-        return "w-full h-full min-h-[750px] rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-lg";
+        return "w-full h-full min-h-[420px] sm:min-h-[750px] rounded-2xl border border-zinc-200 dark:border-zinc-800/80 shadow-lg";
     }
   };
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
       {/* Workspace Control Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 backdrop-blur-xl shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 backdrop-blur-xl shadow-sm">
         {/* Left: App Switcher Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 max-w-full">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 max-w-full -mx-1 px-1">
           {previewable.map((p) => {
             const isSelected = selectedProject.id === p.id;
             return (
               <button
                 key={p.id}
                 onClick={() => setSelectedProject(p)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all ${
                   isSelected
                     ? "bg-sky-500 text-white shadow-md shadow-sky-500/20"
                     : "bg-zinc-100 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 border border-zinc-200 dark:border-zinc-700/40"
@@ -88,9 +89,9 @@ export default function LivePreviewView({
           })}
         </div>
 
-        {/* Center: Device Switcher */}
+        {/* Center: Device Switcher (Desktop and Tablet only) */}
         {selectedProject.allowIframe && targetUrl && (
-          <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="hidden sm:flex items-center gap-1 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 shrink-0">
             <button
               onClick={() => setDevice("desktop")}
               className={`p-1.5 rounded-lg text-xs transition-colors ${
@@ -128,19 +129,19 @@ export default function LivePreviewView({
         )}
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {targetUrl && (
             <>
               <button
                 onClick={() => setIframeKey((k) => k + 1)}
-                className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60 transition-colors"
+                className="p-1.5 sm:p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60 transition-colors"
                 title="Reload Preview"
               >
                 <RotateCw className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handleCopy}
-                className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60 transition-colors"
+                className="p-1.5 sm:p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700/60 transition-colors"
                 title="Copy Direct Link"
               >
                 {copied ? (
@@ -153,9 +154,9 @@ export default function LivePreviewView({
                 href={targetUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-sm transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-sm transition-colors"
               >
-                <span>Launch App</span>
+                <span>Launch</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </>
@@ -164,7 +165,7 @@ export default function LivePreviewView({
       </div>
 
       {/* Main Preview Canvas */}
-      <div className="relative h-[820px] min-h-[750px] w-full rounded-3xl bg-zinc-100/60 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800/80 flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+      <div className="relative h-[65vh] sm:h-[820px] min-h-[420px] sm:min-h-[750px] w-full rounded-2xl sm:rounded-3xl bg-zinc-100/60 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800/80 flex items-center justify-center p-1 sm:p-4 overflow-hidden">
         {selectedProject.allowIframe && targetUrl ? (
           <div className={`relative transition-all duration-300 overflow-hidden flex flex-col ${getContainerWidth()}`}>
             {isLoading && (
@@ -177,7 +178,7 @@ export default function LivePreviewView({
               key={iframeKey}
               src={targetUrl}
               title={selectedProject.title}
-              className="w-full h-full min-h-[750px] flex-1 bg-white dark:bg-zinc-900 border-0 block"
+              className="w-full h-full min-h-[420px] sm:min-h-[750px] flex-1 bg-white dark:bg-zinc-900 border-0 block"
               onLoad={() => setIsLoading(false)}
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
             />

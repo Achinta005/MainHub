@@ -7,14 +7,16 @@ import LivePreviewModal from "@/components/LivePreviewModal";
 import LivePreviewView from "@/components/LivePreviewView";
 import StatusPage from "@/components/StatusPage";
 import RedirectsView from "@/components/RedirectsView";
+import ProjectDocPanel from "@/components/ProjectDocPanel";
 import { PROJECTS, Project } from "@/data/projects";
-import { Search, X, Sparkles, Server } from "lucide-react";
+import { Search, X, Server } from "lucide-react";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"projects" | "preview" | "status" | "redirects">("projects");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [previewProject, setPreviewProject] = useState<Project | null>(null);
+  const [docProject, setDocProject] = useState<Project | null>(null);
   const [healthMap, setHealthMap] = useState<
     Record<string, { ok: boolean; latencyMs: number | null; status: number }>
   >({});
@@ -63,6 +65,7 @@ export default function HomePage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     pingServices();
   }, []);
 
@@ -110,45 +113,46 @@ export default function HomePage() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 sm:pb-16 md:pb-12">
         {/* Showcase Tab */}
         {activeTab === "projects" && (
-          <div className="space-y-10 animate-in fade-in duration-300">
+          <div className="space-y-6 sm:space-y-10 animate-in fade-in duration-300">
             {/* Hero Section */}
-            <div className="text-center max-w-3xl mx-auto space-y-4">
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-b dark:from-white dark:via-zinc-100 dark:to-zinc-400">
+            <div className="text-center max-w-3xl mx-auto space-y-2.5 sm:space-y-4 px-1">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-b dark:from-white dark:via-zinc-100 dark:to-zinc-400">
                 Showcase & Infrastructure Hub
               </h1>
 
-              <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xs sm:text-sm md:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
                 Explore production web applications, desktop command tools, microservices, and live browser extensions running under the root domain.
               </p>
             </div>
 
             {/* Centered Search Bar & Category Controls */}
-            <div className="max-w-2xl mx-auto space-y-4">
+            <div className="max-w-2xl mx-auto space-y-3.5 sm:space-y-4">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+                <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search projects by name, stack (Next.js, Rust, Tauri), or category... (Press / to focus)"
-                  className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 focus:border-sky-500/60 focus:ring-4 focus:ring-sky-500/10 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all shadow-xl shadow-zinc-200/50 dark:shadow-black/40 backdrop-blur-md"
+                  placeholder="Search projects, stacks, tags... (Press / to focus)"
+                  className="w-full pl-10 sm:pl-11 pr-10 sm:pr-12 py-3 sm:py-3.5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 focus:border-sky-500/60 focus:ring-4 focus:ring-sky-500/10 text-base sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition-all shadow-lg sm:shadow-xl shadow-zinc-200/50 dark:shadow-black/40 backdrop-blur-md"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    className="absolute right-3.5 sm:right-4 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg"
+                    aria-label="Clear search"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              {/* Category Pills */}
-              <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2">
+              {/* Category Pills (Horizontal scroll on mobile, wrap on tablet/desktop) */}
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 -mx-3.5 px-3.5 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
                 {categories.map((cat) => {
                   const isSelected = selectedCategory === cat;
                   const count =
@@ -160,10 +164,10 @@ export default function HomePage() {
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                         isSelected
                           ? "bg-sky-500 text-white shadow-md shadow-sky-500/25"
-                          : "bg-white dark:bg-zinc-900/60 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800/80 shadow-sm"
+                          : "bg-white dark:bg-zinc-900/60 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800/80 shadow-xs"
                       }`}
                     >
                       {cat} <span className="opacity-60 ml-0.5">({count})</span>
@@ -175,18 +179,19 @@ export default function HomePage() {
 
             {/* Projects Grid */}
             {filteredProjects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-1 sm:pt-2">
                 {filteredProjects.map((project) => (
                   <ProjectCard
                     key={project.id}
                     project={project}
                     onPreview={(p) => setPreviewProject(p)}
+                    onSelect={(p) => setDocProject(p)}
                     health={healthMap[project.id]}
                   />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/20 max-w-md mx-auto">
+              <div className="text-center py-12 sm:py-16 p-6 sm:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/20 max-w-md mx-auto">
                 <Server className="w-10 h-10 text-zinc-400 dark:text-zinc-600 mx-auto mb-3" />
                 <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200">
                   No matching projects found
@@ -228,15 +233,15 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <div className="flex items-center gap-2">
+      <footer className="border-t border-zinc-200 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md py-6 sm:py-8 pb-20 md:pb-8 mt-10 sm:mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2">
             <span className="font-semibold text-zinc-700 dark:text-zinc-300">Achinta Portal</span>
-            <span>·</span>
+            <span className="hidden sm:inline">·</span>
             <span>All systems routed via root domain <strong className="text-zinc-800 dark:text-zinc-400">achinta.me</strong></span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-wrap justify-center gap-x-4 gap-y-2">
             <button
               onClick={() => setActiveTab("preview")}
               className="hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
@@ -271,6 +276,14 @@ export default function HomePage() {
       <LivePreviewModal
         project={previewProject}
         onClose={() => setPreviewProject(null)}
+      />
+
+      {/* Interactive Architecture & Documentation Panel */}
+      <ProjectDocPanel
+        project={docProject}
+        onClose={() => setDocProject(null)}
+        onPreview={(p) => setPreviewProject(p)}
+        health={docProject ? healthMap[docProject.id] : undefined}
       />
     </div>
   );
